@@ -1,0 +1,3 @@
+include 'example-bot'
+include 'core'
+

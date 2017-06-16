@@ -1,0 +1,32 @@
+group 'org.bcf'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { // for SonarQube plugin
+        url "http://repo.opensourceagility.com/snapshots"
+    }
+}
+
+def JACKSON_VERSION = '2.9.0.pr3'
+
+dependencies {
+    compile project(":core")
+    compile "javax.websocket:javax.websocket-api:1.1"
+    compile "org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13"
+    compile "com.github.seratch:jslack:1.0.11"
+    // Logger impl
+    //compile 'org.apache.logging.log4j:log4j-slf4j-impl'
+
+    // jackson
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
+
+
+    testCompile group: 'junit', name: 'junit'
+}

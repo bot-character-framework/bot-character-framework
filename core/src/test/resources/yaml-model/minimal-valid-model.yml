@@ -1,0 +1,5 @@
+id: my-text-character
+model:
+  OK:
+    variations:
+      - text: Sure

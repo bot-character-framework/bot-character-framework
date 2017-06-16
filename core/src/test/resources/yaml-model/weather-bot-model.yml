@@ -1,0 +1,18 @@
+
+name: My test Character
+id: my-text-character
+version: 1.0
+lang: en-US
+character:
+  formal: 0
+  emotional: 0.5
+model:
+  OK:
+    category: general
+    variations:
+      - text: No problem
+        formal: -0.5
+      - text: Sure
+      - text: OK
+      - text: ok
+        formal: -0.1

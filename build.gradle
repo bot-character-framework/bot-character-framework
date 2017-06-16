@@ -1,0 +1,80 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
+    }
+}
+
+allprojects {
+    group "org.bcf"
+    version = project.property('version.current')
+
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: "com.github.hierynomus.license"
+    apply plugin: 'maven-publish'
+
+    project.sourceCompatibility = 1.8
+    project.targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+            jcenter()
+        }
+    }
+
+    dependencyManagement {
+        def JACKSON_VERSION = '2.9.0.pr3'
+        dependencies {
+            // logging
+            dependencySet(group: "org.slf4j", version: "1.7.12") {
+                entry 'slf4j-api'
+            }
+            dependency "org.apache.logging.log4j:log4j-slf4j-impl:2.3"
+            // http client
+            dependency("org.apache.httpcomponents:httpclient:4.4.1") {
+                exclude group: 'commons-logging', module: 'commons-logging'
+            }
+            // commons-*
+            dependency "commons-io:commons-io:2.4"
+            dependency "org.apache.commons:commons-lang3:3.4"
+            // jackson
+            dependency "com.fasterxml.jackson.core:jackson-databind:${JACKSON_VERSION}"
+            dependency "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${JACKSON_VERSION}"
+            dependency "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${JACKSON_VERSION}"
+            // testing
+            dependency "junit:junit:4.12"
+            dependency "pl.pragmatists:JUnitParams:1.1.0"
+        }
+    }
+
+    license {
+        header = rootProject.file('license-notice-template.txt')
+        ext.year = Calendar.getInstance().get(Calendar.YEAR)
+        ext.url = 'https://github.com/corvis/bot-character-framework'
+        excludes(['**/*.txt', '**/*.conf', '**/*.yaml', '**/*.yml'])
+    }
+}
+
+task printProjectVersion {
+    doLast {
+        println project.version
+    }
+}
+
+downloadLicenses {
+    includeProjectDependencies = true
+    dependencyConfiguration = 'compile'
+}
