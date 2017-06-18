@@ -27,7 +27,7 @@ import java.util.Random;
 /**
  * @author Dmitry Berezovsky (corvis)
  */
-public class DefaultCharacterImpl<P extends Enum> implements Character<P> {
+public class DefaultCharacterImpl<P extends Enum<P>> implements Character<P> {
 
     private CharacterModel model;
     private Random random = new Random(LocalTime.now().toSecondOfDay());

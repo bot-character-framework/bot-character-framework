@@ -32,6 +32,9 @@ public class YamlCharacterModelLoader extends BaseCharacterModelLoader {
 
     @Override
     public <T extends CharacterModel> T loadModel(InputStream stream, Class<T> modelClass) throws ReadModelException {
+        if (stream == null) {
+            throw new ReadModelException("Input stream containing model definition shouldn't be null");
+        }
         YAMLFactory yamlFactory = new YAMLFactory();
         ObjectMapper objectMapper = new ObjectMapper(yamlFactory);
         T result = null;

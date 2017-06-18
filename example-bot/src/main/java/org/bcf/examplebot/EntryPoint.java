@@ -11,10 +11,14 @@ import java.net.URL;
  * @author Dmitry Berezovsky (corvis)
  */
 public class EntryPoint {
-    public static final String TOKEN = "xoxb-196743889153-bcaNVvR8aHJP66ilDMVRmAHk";
 
     public static void main(String[] args) {
-        SlackTransport transport = new SlackTransport(TOKEN);
+        if (args.length != 1) {
+            System.err.append("You should bass 1 argument containing slack token\n");
+            return;
+        }
+        String token = args[0];
+        SlackTransport transport = new SlackTransport(token);
         transport.initialize();
         try {
             RasaNLU nluModule = new RasaNLU(new URL("http://localhost:5000/parse"));

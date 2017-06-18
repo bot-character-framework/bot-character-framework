@@ -34,7 +34,7 @@ import java.io.InputStream;
 public class CharacterFactory {
     private static final YamlCharacterModelLoader YAML_LOADER = new YamlCharacterModelLoader();
 
-    private <T extends Enum> Character<T> buildCharacter(Class<T> cls, CharacterModel model) throws CharacterException {
+    private <T extends Enum<T>> Character<T> buildCharacter(Class<T> cls, CharacterModel model) throws CharacterException {
         try {
             return new DefaultCharacterImpl<T>().setModel(model);
         } catch (Exception e) {
@@ -50,14 +50,14 @@ public class CharacterFactory {
         return buildCharacter(model.getPhrasebook(), model);
     }
 
-    public <T extends Enum> Character<T> createCharacterFormYamlModel(String filePath, Class<T> phrasebook) throws CharacterException, ReadModelException, IOException {
+    public <P extends Enum<P>> Character<P> createCharacterFormYamlModel(String filePath, Class<P> phrasebook) throws CharacterException, ReadModelException, IOException {
         try (FileInputStream input = new FileInputStream(filePath)) {
             CharacterModel model = loadCharacterModel(YAML_LOADER, input);
             return buildCharacter(phrasebook, model);
         }
     }
 
-    public Character createCharacterFormYamlModel(InputStream inputStream, Class<Enum> phrasebook) throws CharacterException, ReadModelException {
+    public <P extends Enum<P>> Character<P> createCharacterFormYamlModel(InputStream inputStream, Class<P> phrasebook) throws CharacterException, ReadModelException {
         CharacterModel model = loadCharacterModel(YAML_LOADER, inputStream);
         return buildCharacter(phrasebook, model);
     }

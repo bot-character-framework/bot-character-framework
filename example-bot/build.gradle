@@ -16,11 +16,13 @@ def JACKSON_VERSION = '2.9.0.pr3'
 
 dependencies {
     compile project(":core")
+    // Slack dependencies
     compile "javax.websocket:javax.websocket-api:1.1"
     compile "org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13"
     compile "com.github.seratch:jslack:1.0.11"
     // Logger impl
-    //compile 'org.apache.logging.log4j:log4j-slf4j-impl'
+    compile 'org.apache.logging.log4j:log4j-core'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl'
 
     // jackson
     compile "com.fasterxml.jackson.core:jackson-databind"

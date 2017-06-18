@@ -17,6 +17,7 @@
 package org.bcf;
 
 import org.bcf.character.Character;
+import org.bcf.domain.ConversationSession;
 import org.bcf.domain.Message;
 import org.bcf.domain.StructuredMessage;
 
@@ -25,22 +26,24 @@ import java.util.List;
 /**
  * @author Dmitry Berezovsky (corvis)
  */
-public interface Bot {
+public interface Bot<P extends Enum<P>> {
     void incomingMessage(Message message);
 
     void reply(Message message);
 
-    List<Skill> getSkillset();
+    List<Skill<? extends Bot<P>, P>> getSkillset();
 
     BotTransport getTransport();
 
     NLUModule getNLUModule();
 
-    Character getCharacter();
+    Character<P> getCharacter();
 
     void onUnrecognizedIntent(StructuredMessage message);
 
     void onProcessingError(StructuredMessage message, Exception e);
 
     void initialize();
+
+    ConversationSession<P> buildSessionForMessage(Message message);
 }

@@ -21,19 +21,23 @@ import org.bcf.BotTransport;
 import org.bcf.NLUModule;
 import org.bcf.Skill;
 import org.bcf.character.Character;
+import org.bcf.domain.ConversationSession;
+import org.bcf.domain.DefaultConversationSessionImpl;
 import org.bcf.domain.Message;
 import org.bcf.domain.StructuredMessage;
 
 /**
  * @author Dmitry Berezovsky (corvis)
  */
-public abstract class DefaultBotImpl implements Bot {
+public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
     private BotTransport transport;
     private NLUModule NLUModule;
-    private Character character;
+    private Character<P> character;
 
     @Override
     public void incomingMessage(Message message) {
+        // Step 0. Create session for message
+        ConversationSession<P> session = buildSessionForMessage(message);
         // Step 1. Process incoming message with NLU module
         StructuredMessage structuredMessage = this.NLUModule.processMessage(message);
         if (structuredMessage.getIntent() == null) {
@@ -41,9 +45,9 @@ public abstract class DefaultBotImpl implements Bot {
             return;
         }
         // Step 2. Find appropriate handler
-        for (Skill skill : getSkillset()) {
+        for (Skill<? extends Bot<P>, P> skill : getSkillset()) {
             if (skill.canHandle(structuredMessage.getIntent().getId())) {
-                skill.handle(structuredMessage, this);
+                skill.handle(structuredMessage, session);
             }
         }
     }
@@ -58,7 +62,7 @@ public abstract class DefaultBotImpl implements Bot {
         return transport;
     }
 
-    public DefaultBotImpl setTransport(BotTransport transport) {
+    public DefaultBotImpl<P> setTransport(BotTransport transport) {
         this.transport = transport;
         return this;
     }
@@ -68,17 +72,17 @@ public abstract class DefaultBotImpl implements Bot {
         return NLUModule;
     }
 
-    public DefaultBotImpl setNLUModule(org.bcf.NLUModule NLUModule) {
+    public DefaultBotImpl<P> setNLUModule(org.bcf.NLUModule NLUModule) {
         this.NLUModule = NLUModule;
         return this;
     }
 
     @Override
-    public Character getCharacter() {
+    public Character<P> getCharacter() {
         return character;
     }
 
-    public DefaultBotImpl setCharacter(Character character) {
+    public DefaultBotImpl<P> setCharacter(Character<P> character) {
         this.character = character;
         return this;
     }
@@ -99,5 +103,15 @@ public abstract class DefaultBotImpl implements Bot {
             transport.initialize();
         }
         transport.setOnMessageReceivedCallback(this::incomingMessage);
+    }
+
+    @Override
+    public ConversationSession<P> buildSessionForMessage(Message message) {
+        // TODO: Proper implementation required
+        DefaultConversationSessionImpl<P> session = new DefaultConversationSessionImpl<>(this);
+        session.setId(message.getRoom().getId());
+        session.setParticipant(message.getSender());
+        session.setResponseTarget(message.getRoom());
+        return session;
     }
 }

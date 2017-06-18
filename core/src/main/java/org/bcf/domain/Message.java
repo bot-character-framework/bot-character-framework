@@ -26,7 +26,7 @@ import java.time.LocalDate;
 public interface Message {
     ConversationParticipant getRecipient();
 
-    ConversationParticipant getSender();
+    Person getSender();
 
     Room getRoom();
 

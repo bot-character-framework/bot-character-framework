@@ -16,13 +16,14 @@
  */
 package org.bcf;
 
+import org.bcf.domain.ConversationSession;
 import org.bcf.domain.StructuredMessage;
 
 /**
  * @author Dmitry Berezovsky (corvis)
  */
-public interface Skill {
+public interface Skill<B extends Bot<P>, P extends Enum<P>> {
     boolean canHandle(String intentId);
 
-    void handle(StructuredMessage message, Bot bot);
+    void handle(StructuredMessage message, ConversationSession<P> session);
 }

@@ -18,6 +18,7 @@ package org.bcf.domain.base;
 
 import org.bcf.domain.ConversationParticipant;
 import org.bcf.domain.Message;
+import org.bcf.domain.Person;
 import org.bcf.domain.Room;
 
 import java.time.LocalDate;
@@ -28,7 +29,7 @@ import java.time.LocalDate;
  */
 public class BaseMessage implements Message {
     private ConversationParticipant recipient;
-    private ConversationParticipant sender;
+    private Person sender;
     private Room room;
     private LocalDate dateSent;
     private LocalDate dateDelivered;
@@ -45,11 +46,11 @@ public class BaseMessage implements Message {
     }
 
     @Override
-    public ConversationParticipant getSender() {
+    public Person getSender() {
         return sender;
     }
 
-    public BaseMessage setSender(ConversationParticipant sender) {
+    public BaseMessage setSender(Person sender) {
         this.sender = sender;
         return this;
     }

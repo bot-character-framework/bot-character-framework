@@ -39,10 +39,11 @@ allprojects {
         def JACKSON_VERSION = '2.9.0.pr3'
         dependencies {
             // logging
-            dependencySet(group: "org.slf4j", version: "1.7.12") {
+            dependencySet(group: "org.slf4j", version: "1.7.25") {
                 entry 'slf4j-api'
             }
-            dependency "org.apache.logging.log4j:log4j-slf4j-impl:2.3"
+            dependency "org.apache.logging.log4j:log4j-core:2.8.2"
+            dependency "org.apache.logging.log4j:log4j-slf4j-impl:2.8.2"
             // http client
             dependency("org.apache.httpcomponents:httpclient:4.4.1") {
                 exclude group: 'commons-logging', module: 'commons-logging'

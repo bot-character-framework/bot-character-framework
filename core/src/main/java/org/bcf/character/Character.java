@@ -21,7 +21,7 @@ import org.bcf.exception.LineNotFound;
 /**
  * @author Dmitry Berezovsky (corvis)
  */
-public interface Character<T extends Enum> {
+public interface Character<T extends Enum<T>> {
 
     CharacterModel.Line getLine(String lineId, float formal, float emotional) throws LineNotFound;
 
@@ -31,7 +31,7 @@ public interface Character<T extends Enum> {
         return getLine(lineId, 0, 0);
     }
 
-    default CharacterModel.Line getLine(T phrase) throws LineNotFound {
+    default CharacterModel.Line getLine(T phrase) {
         return getLine(phrase, 0, 0);
     }
 
@@ -39,7 +39,11 @@ public interface Character<T extends Enum> {
         return getLine(lineId, formal, emotional).getText();
     }
 
-    default CharacterModel.Line getLine(T phrase, float formal, float emotional) throws LineNotFound {
-        return getLine(phrase.name(), formal, emotional);
+    default CharacterModel.Line getLine(T phrase, float formal, float emotional) {
+        try {
+            return getLine(phrase.name(), formal, emotional);
+        } catch (LineNotFound lineNotFound) {
+            throw new RuntimeException("Line not found in the model while model was pre-validated.", lineNotFound);
+        }
     }
 }
