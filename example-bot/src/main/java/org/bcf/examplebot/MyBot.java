@@ -33,7 +33,10 @@ import java.util.List;
  */
 public class MyBot extends DefaultBotImpl<MyBot.PhraseBook> {
     public enum PhraseBook {
-        OK, ASK_FOR_LOCATION, TEMPERATURE, FORECAST
+        // General
+        OK, DID_NOT_GET_IT,
+        // Weather
+        ASK_FOR_LOCATION, TEMPERATURE, FORECAST
     }
     private static final String CHARACTER_MODEL_FILE = "/character-model.yml";
     private static List<Skill<? extends Bot<PhraseBook>, PhraseBook>> SKILLS = Arrays.asList(new Hello(), new WeatherInfo());

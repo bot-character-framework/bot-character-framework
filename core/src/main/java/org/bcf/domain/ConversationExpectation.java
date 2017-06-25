@@ -1,29 +1,54 @@
+/**
+ * MIT License
+ *
+ * Bot Character Framework - Java framework for building smart bots
+ * Copyright (c) 2017 Dmitry Berezovsky https://github.com/corvis/bot-character-framework
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ */
 package org.bcf.domain;
 
 import org.bcf.Skill;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Dmitry Berezovsky (corvis)
  */
-public class ConversationExpectation {
+public class ConversationExpectation implements Serializable {
     private String name;
+    private String targetName;
     private List<String> expectedIntents = new ArrayList<>();
     private List<String> expectedEntities = new ArrayList<>();
-    private String targetName;
+    private StructuredMessage source;
 
     public ConversationExpectation(String targetName) {
         this.targetName = targetName;
     }
 
     public ConversationExpectation(Skill targetSkill) {
-        this.targetName = targetSkill.getClass().getCanonicalName();
+        this.setTargetSkill(targetSkill);
     }
 
     public ConversationExpectation(Class<? extends Skill> targetSkillClass) {
         this.targetName = targetSkillClass.getCanonicalName();
+    }
+
+    public ConversationExpectation(ConversationExpectation original) {
+        name = original.getName();
+        targetName = original.getName();
+        expectedEntities.addAll(original.getExpectedEntities());
+        expectedIntents.addAll(original.getExpectedIntents());
     }
 
     public ConversationExpectation addIntent(String intentId) {
@@ -73,4 +98,29 @@ public class ConversationExpectation {
         this.name = name;
         return this;
     }
+
+    public StructuredMessage getSource() {
+        return source;
+    }
+
+    public ConversationExpectation setTargetSkill(Skill target) {
+        targetName = target.getClass().getCanonicalName();
+        return this;
+    }
+
+    public ConversationExpectation setSource(StructuredMessage source) {
+        this.source = source;
+        return this;
+    }
+
+    /**
+     * Creates new expectation using current one as a template.
+     * Given source will be set as a source for new expectation overriding existing value
+     * @param source
+     * @return new expectation
+     */
+    public ConversationExpectation newFromTemplate(StructuredMessage source) {
+        return new ConversationExpectation(this).setSource(source);
+    }
+
 }

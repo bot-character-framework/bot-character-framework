@@ -14,22 +14,39 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  */
-package org.bcf.character;
+package org.bcf.domain;
 
-import org.bcf.exception.ReadModelException;
-
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Dmitry Berezovsky (corvis)
  */
-public interface CharacterModelLoader {
-    /**
-     * Loads model from given input stream
-     * @param stream
-     * @return
-     */
-    CharacterModel loadModel(InputStream stream) throws ReadModelException;
+public class DefaultConversationContext implements ConversationContext {
+    private Map<String, Object> memory = new HashMap<>();
+    private String sessionId;
 
-    <T extends CharacterModel> T loadModel(InputStream stream, Class<T> modelClass) throws ReadModelException;
+    public DefaultConversationContext(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    @Override
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    @Override
+    public Object get(String key) {
+        return memory.get(key);
+    }
+
+    @Override
+    public void put(String key, Object value) {
+        memory.put(key, value);
+    }
+
+    @Override
+    public boolean has(String key) {
+        return memory.containsKey(key);
+    }
 }

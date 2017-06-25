@@ -15,6 +15,13 @@ model:
       - text: OK
       - text: ok
         formal: -0.1
+  DID_NOT_GET_IT:
+    category: general
+    variations:
+      - text: "Sorry, didn't get it"
+      - text: "I wish I understand you"
+      - text: "I'm not sure I understood..."
+      - text: "I'm not sure I got you right..."
 # ------------------
 # WEATHER
 # ------------------
@@ -32,7 +39,8 @@ model:
   ASK_FOR_LOCATION:
     category: weather
     variations:
-      - text: For which location?
-      - text: "I don't know where you are so can't decide which location I should choose."
+      - text: In which location?
+      - text: In which city?
+      - text: "I don't know where you are so can't guess the location you are interested in..."
       - text: Just tell me for which location
         formal: -0.5

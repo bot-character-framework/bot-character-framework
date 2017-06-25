@@ -18,7 +18,6 @@ package org.bcf.examplebot.skills
 
 import org.bcf.domain.ConversationExpectation
 import org.bcf.domain.ConversationSession
-import org.bcf.domain.Entity
 import org.bcf.domain.StructuredMessage
 import org.bcf.examplebot.MyBot
 import org.bcf.impl.BaseSkill
@@ -31,11 +30,13 @@ import java.time.LocalDate
 private data class Forecast(
         var temperature: Float,
         var weather: String,
-        var clouds: Boolean, var rain: Boolean) {
+        var clouds: Boolean, var rain: Boolean,
+        var location: String? = null,
+        var time: String? = null) {
 
     fun getFullForecast(): String {
-        val cloudState = if (clouds) "cloudy" else ""
-        val rainState = if (rain) "with showers" else "sunny"
+        val cloudState = if (clouds) "cloudy" else "sunny"
+        val rainState = if (rain) "with showers" else ""
         return "$temperature degrees celsius, $cloudState $rainState $weather"
     }
 }
@@ -47,6 +48,10 @@ class WeatherInfo : BaseSkill<MyBot, MyBot.PhraseBook>() {
             Forecast(12f, "", true, false),
             Forecast(18.4f, "", true, false)
     )
+
+    private object CONTEXT_KEY {
+        val LOCATION = "location"
+    }
 
     private object ENTITY {
         val ADDRESS = "address"
@@ -61,7 +66,7 @@ class WeatherInfo : BaseSkill<MyBot, MyBot.PhraseBook>() {
     }
 
     private object EXPECTATION {
-        val ADDRESS = ConversationExpectation(WeatherInfo::class.java).setName("address").addEntity(ENTITY.ADDRESS)
+        val ADDRESS = ConversationExpectation(WeatherInfo::class.java).setName("address").addEntity(ENTITY.ADDRESS)!!
     }
 
     override fun handleMessage(@NotNull message: StructuredMessage, @NotNull session: ConversationSession<MyBot.PhraseBook>) {
@@ -72,7 +77,10 @@ class WeatherInfo : BaseSkill<MyBot, MyBot.PhraseBook>() {
         when (message.intent.id) {
             INTENT.WEATHER_GENERAL -> {
                 val forecast = getForecastForUserMessage(message, session) ?: return
-                session.reply(MyBot.PhraseBook.FORECAST, mapOf("forecast" to forecast.getFullForecast()))
+                session.reply(MyBot.PhraseBook.FORECAST, mapOf(
+                        "forecast" to forecast.getFullForecast(),
+                        "location" to forecast.location)
+                )
             }
             INTENT.TEMPERATURE -> {
                 val forecast = getForecastForUserMessage(message, session) ?: return
@@ -83,22 +91,36 @@ class WeatherInfo : BaseSkill<MyBot, MyBot.PhraseBook>() {
         }
     }
 
-    override fun handleExpectation(expectation: ConversationExpectation, message: StructuredMessage, session: ConversationSession<MyBot.PhraseBook>) {
+    override fun handleExpectation(expectation: ConversationExpectation, message: StructuredMessage, session: ConversationSession<MyBot.PhraseBook>): StructuredMessage? {
         when (expectation.name) {
             EXPECTATION.ADDRESS.name -> {
                 // TODO: need to remember address (put into context) and invoke original message handler
+                val addressEntity = message.entities.find { it.typeId == ENTITY.ADDRESS }
+                // If address still is not there - ask user one more time
+                if (addressEntity == null) {
+                    session.reply(MyBot.PhraseBook.DID_NOT_GET_IT)
+                    session.expect(expectation)
+                    return null
+                }
+                session.context.put(CONTEXT_KEY.LOCATION, addressEntity.value)
+                return expectation.source // Process original message then
             }
         }
+        return null
     }
 
-    private fun getLocationOrAskUser(message: StructuredMessage, session: ConversationSession<MyBot.PhraseBook>): Entity? {
+    private fun getLocationOrAskUser(message: StructuredMessage, session: ConversationSession<MyBot.PhraseBook>): String? {
         val location = message.entities.find { it.typeId == ENTITY.ADDRESS }
         if (location == null) {
+            // If request doesn't contain location - check the context
+            if (session.context.has(CONTEXT_KEY.LOCATION)) {
+                return session.context.getString(CONTEXT_KEY.LOCATION)
+            }
             session.reply(MyBot.PhraseBook.ASK_FOR_LOCATION)
-            session.expectEntity(ENTITY.ADDRESS, this)
+            session.expect(EXPECTATION.ADDRESS.newFromTemplate(message).setTargetSkill(this))
             return null
         }
-        return location
+        return location.value
     }
 
     override fun canHandle(intentId: String): Boolean {
@@ -108,10 +130,11 @@ class WeatherInfo : BaseSkill<MyBot, MyBot.PhraseBook>() {
 
     private fun getForecastForUserMessage(message: StructuredMessage, session: ConversationSession<MyBot.PhraseBook>): Forecast? {
         val location = getLocationOrAskUser(message, session) ?: return null
-        return loadForecast(location.value)
+        return loadForecast(location)
     }
 
     private fun loadForecast(location: String, targetDate: LocalDate = LocalDate.now()): Forecast {
-        return forecastVariations.get((Math.random() * forecastVariations.size).toInt())
+        val forecast = forecastVariations[(Math.random() * forecastVariations.size).toInt()]
+        return forecast.copy(location = location, time = targetDate.toString())
     }
 }
