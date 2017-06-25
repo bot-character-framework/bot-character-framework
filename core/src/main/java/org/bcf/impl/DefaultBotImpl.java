@@ -16,15 +16,17 @@
  */
 package org.bcf.impl;
 
-import org.bcf.Bot;
-import org.bcf.BotTransport;
-import org.bcf.NLUModule;
-import org.bcf.Skill;
+import org.apache.commons.collections4.ListUtils;
+import org.bcf.*;
 import org.bcf.character.Character;
-import org.bcf.domain.ConversationSession;
-import org.bcf.domain.DefaultConversationSessionImpl;
-import org.bcf.domain.Message;
-import org.bcf.domain.StructuredMessage;
+import org.bcf.character.PhraseFormatter;
+import org.bcf.character.impl.SimpleFormatter;
+import org.bcf.domain.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Dmitry Berezovsky (corvis)
@@ -33,6 +35,9 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
     private BotTransport transport;
     private NLUModule NLUModule;
     private Character<P> character;
+    private ConversationSessionStorage<P> sessionStorage;
+    private Map<String, Skill<? extends Bot<P>, P>> name2skill = null;
+    private PhraseFormatter phraseFormatter = new SimpleFormatter();
 
     @Override
     public void incomingMessage(Message message) {
@@ -44,11 +49,28 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
             onUnrecognizedIntent(structuredMessage);
             return;
         }
-        // Step 2. Find appropriate handler
-        for (Skill<? extends Bot<P>, P> skill : getSkillset()) {
-            if (skill.canHandle(structuredMessage.getIntent().getId())) {
-                skill.handle(structuredMessage, session);
+        try {
+            getSessionStorage().lock(session);
+            // Step 2. Try to match expectations
+            ConversationExpectation expectation = session.popExpectation();
+            while (expectation != null) {
+                Skill<? extends Bot<P>, P> matchedSkill = findSkillMatchingExpectation(expectation, structuredMessage);
+                if (matchedSkill != null) {
+                    matchedSkill.handleExpectation(expectation, structuredMessage, session);
+                    session.clearExpectations();
+                    return;
+                }
+                expectation = session.popExpectation();
             }
+            // Step 3. Find appropriate handler
+            for (Skill<? extends Bot<P>, P> skill : getSkillset()) {
+                if (skill.canHandle(structuredMessage.getIntent().getId())) {
+                    skill.handleMessage(structuredMessage, session);
+                    return;
+                }
+            }
+        } finally {
+            getSessionStorage().unlock(session);
         }
     }
 
@@ -98,7 +120,29 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
     }
 
     @Override
+    public ConversationSessionStorage<P> getSessionStorage() {
+        return sessionStorage;
+    }
+
+    public DefaultBotImpl setSessionStorage(ConversationSessionStorage<P> sessionStorage) {
+        this.sessionStorage = sessionStorage;
+        return this;
+    }
+
+    public PhraseFormatter getPhraseFormatter() {
+        return phraseFormatter;
+    }
+
+    public DefaultBotImpl setPhraseFormatter(PhraseFormatter phraseFormatter) {
+        this.phraseFormatter = phraseFormatter;
+        return this;
+    }
+
+    @Override
     public void initialize() {
+        if (getSessionStorage() == null) {
+            setSessionStorage(new InMemoryConversationSessionStorage<>(this));
+        }
         if (!transport.isInitialized()) {
             transport.initialize();
         }
@@ -107,11 +151,46 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
 
     @Override
     public ConversationSession<P> buildSessionForMessage(Message message) {
-        // TODO: Proper implementation required
+        String sessionId = message.getRoom().getId();
+        if (getSessionStorage().sessionExists(sessionId)) {
+            return getSessionStorage().getSession(sessionId);
+        }
         DefaultConversationSessionImpl<P> session = new DefaultConversationSessionImpl<>(this);
-        session.setId(message.getRoom().getId());
+        session.setId(sessionId);
         session.setParticipant(message.getSender());
         session.setResponseTarget(message.getRoom());
+        getSessionStorage().persistSession(session);
         return session;
     }
+
+    protected Skill<? extends Bot<P>, P> findSkillMatchingExpectation(ConversationExpectation expectation,
+                                                                      StructuredMessage structuredMessage) {
+        // Check if message matches intent
+        if (structuredMessage.getIntent() != null && expectation.getExpectedIntents().contains(structuredMessage.getIntent().getId())) {
+            return getNametoSkill().get(expectation.getTargetName());
+        }
+        // Check if message matches one of expected entities
+        List<String> messageEntities = structuredMessage.getEntities()
+                .stream().map(Entity::getTypeId).collect(Collectors.toList());
+        if (!ListUtils.intersection(expectation.getExpectedEntities(), messageEntities).isEmpty()) {
+            return getNametoSkill().get(expectation.getTargetName());
+        }
+        return null;
+    }
+
+    private Map<String, Skill<? extends Bot<P>, P>> getNametoSkill() {
+        if (name2skill == null) {
+            name2skill = new HashMap<>();
+            List<Skill<? extends Bot<P>, P>> skillset = getSkillset();
+            if (skillset != null && skillset.size() != name2skill.size()) {
+                name2skill.clear();
+                skillset.forEach(pSkill -> name2skill.put(pSkill.getClass().getCanonicalName(), pSkill));
+            }
+            return name2skill;
+        } else {
+            return name2skill;
+        }
+    }
+
+
 }

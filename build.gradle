@@ -48,9 +48,12 @@ allprojects {
             dependency("org.apache.httpcomponents:httpclient:4.4.1") {
                 exclude group: 'commons-logging', module: 'commons-logging'
             }
+            // https://mvnrepository.com/artifact/com.intellij/annotations
+            dependency 'com.intellij:annotations:9.0.4'
             // commons-*
             dependency "commons-io:commons-io:2.4"
             dependency "org.apache.commons:commons-lang3:3.4"
+            dependency "org.apache.commons:commons-collections4:4.1"
             // jackson
             dependency "com.fasterxml.jackson.core:jackson-databind:${JACKSON_VERSION}"
             dependency "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${JACKSON_VERSION}"

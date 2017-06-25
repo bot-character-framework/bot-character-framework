@@ -1,0 +1,38 @@
+name: My test Character
+id: my-test-character
+version: 1.0
+lang: en-US
+character:
+  formal: 0
+  emotional: 0
+model:
+  OK:
+    category: general
+    variations:
+      - text: No problem
+        formal: -0.5
+      - text: Sure
+      - text: OK
+      - text: ok
+        formal: -0.1
+# ------------------
+# WEATHER
+# ------------------
+  FORECAST:
+    category: weather
+    variations:
+      - text: "Here is your forcast for ${location}: ${forecast}"
+      - text: ${forecast}
+  TEMPERATURE:
+    category: weather
+    variations:
+      - text: ${temperature}
+      - text: The temperature is ${temperature}
+      - text: It should be ${temperature}
+  ASK_FOR_LOCATION:
+    category: weather
+    variations:
+      - text: For which location?
+      - text: "I don't know where you are so can't decide which location I should choose."
+      - text: Just tell me for which location
+        formal: -0.5

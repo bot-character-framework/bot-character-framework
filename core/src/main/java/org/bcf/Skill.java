@@ -16,14 +16,17 @@
  */
 package org.bcf;
 
+import org.bcf.domain.ConversationExpectation;
 import org.bcf.domain.ConversationSession;
 import org.bcf.domain.StructuredMessage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Dmitry Berezovsky (corvis)
  */
 public interface Skill<B extends Bot<P>, P extends Enum<P>> {
-    boolean canHandle(String intentId);
+    boolean canHandle(@NotNull String intentId);
 
-    void handle(StructuredMessage message, ConversationSession<P> session);
+    void handleMessage(@NotNull StructuredMessage message, @NotNull ConversationSession<P> session);
+    void handleExpectation(@NotNull ConversationExpectation expectation, @NotNull StructuredMessage message, @NotNull ConversationSession<P> session);
 }

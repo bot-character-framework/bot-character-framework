@@ -1,3 +1,19 @@
+/**
+ * MIT License
+ *
+ * Bot Character Framework - Java framework for building smart bots
+ * Copyright (c) 2017 Dmitry Berezovsky https://github.com/corvis/bot-character-framework
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ */
 package org.bcf.examplebot.nlu;
 
 import com.google.gson.JsonElement;
@@ -23,6 +39,7 @@ import java.net.URL;
 public class RasaNLU implements NLUModule {
     private URL endpoint;
     private JsonParser jsonParser = new JsonParser();
+    private String modelName = "default";
 
     public RasaNLU(URL endpoint) {
         this.endpoint = endpoint;
@@ -31,6 +48,7 @@ public class RasaNLU implements NLUModule {
     private String buildRequestBody(String text) {
         JsonObject obj = new JsonObject();
         obj.add("q", new JsonPrimitive(text));
+        obj.add("model", new JsonPrimitive(getModelName()));
         return obj.toString();
     }
 
@@ -41,9 +59,10 @@ public class RasaNLU implements NLUModule {
             for (JsonElement e : json.getAsJsonArray("entities")) {
                 Entity entity = new Entity();
                 JsonObject asJsonObject = e.getAsJsonObject();
+                JsonElement value = asJsonObject.get("value");
                 entity.setStartPosition(asJsonObject.get("start").getAsInt())
                         .setEndPosition(asJsonObject.get("start").getAsInt())
-                        .setValue(asJsonObject.get("value").getAsString())
+                        .setValue(value.isJsonPrimitive() ? value.getAsString() : value.toString())
                         .setTypeId(asJsonObject.get("entity").getAsString())
                         .setSourceId(asJsonObject.get("extractor").getAsString());
                 msg.getEntities().add(entity);
@@ -90,5 +109,14 @@ public class RasaNLU implements NLUModule {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public RasaNLU setModelName(String modelName) {
+        this.modelName = modelName;
+        return this;
     }
 }

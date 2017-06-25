@@ -18,20 +18,21 @@ package org.bcf.character.impl;
 
 import org.bcf.character.Character;
 import org.bcf.character.CharacterModel;
+import org.bcf.character.PhraseFormatter;
 import org.bcf.exception.LineNotFound;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
  * @author Dmitry Berezovsky (corvis)
  */
 public class DefaultCharacterImpl<P extends Enum<P>> implements Character<P> {
-
     private CharacterModel model;
     private Random random = new Random(LocalTime.now().toSecondOfDay());
-    ;
+    private PhraseFormatter phraseFormatter = new SimpleFormatter();
 
     public DefaultCharacterImpl(CharacterModel model) {
         this.model = model;
@@ -44,19 +45,29 @@ public class DefaultCharacterImpl<P extends Enum<P>> implements Character<P> {
         return model;
     }
 
+    public PhraseFormatter getPhraseFormatter() {
+        return phraseFormatter;
+    }
+
+    public DefaultCharacterImpl setPhraseFormatter(PhraseFormatter phraseFormatter) {
+        this.phraseFormatter = phraseFormatter;
+        return this;
+    }
+
     public DefaultCharacterImpl<P> setModel(CharacterModel model) {
         this.model = model;
         return this;
     }
 
     @Override
-    public CharacterModel.Line getLine(String lineId, float formal, float emotional) throws LineNotFound {
+    public CharacterModel.Line getLine(String lineId, Map<String, String> context, float formal, float emotional) throws LineNotFound {
         if (!model.getModel().containsKey(lineId)) {
             throw new LineNotFound(lineId);
         }
         List<CharacterModel.Line> variations = model.getModel().get(lineId).getVariations();
         int index = random.nextInt(variations.size() - 1);
-        return variations.get(index);
+        CharacterModel.Line line = variations.get(index);
+        return getPhraseFormatter().compilePhrase(line, context);
     }
 
 }

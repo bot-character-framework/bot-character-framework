@@ -1,0 +1,42 @@
+@startuml
+!pragma horizontalLineBetweenDifferentPackageAllowed
+node "Transport" {
+    component [Slack Transport] as Slack
+    component [HipChat Transport] as HipChat
+    interface HTTP as HTTP1
+    interface RTM as RTM1
+    interface HTTP as HTTP2
+
+    Slack --> HTTP1
+    Slack --> RTM1
+
+    HipChat --> HTTP2
+}
+
+component "Bot" as Bot
+
+component [Bot Character] as Character
+component [Conversation Session] as Session
+component [Scheduler] as Scheduler
+
+package "NLU Model" as NLU {
+    [Parser] -> [Tagger]
+    [Tagger] -> [POS]
+    [POS] -> [Entity]
+    [Entity] -> [Intent]
+}
+
+Character -up-> Bot
+NLU -up-> Bot
+Session --> Bot
+Scheduler --> Bot
+Transport -down-> Bot
+
+node "Skillset" {
+    component [Greetings]
+    component [Weather]
+}
+
+Skillset --> Bot
+
+@enduml

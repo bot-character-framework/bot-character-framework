@@ -18,30 +18,41 @@ package org.bcf.character;
 
 import org.bcf.exception.LineNotFound;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * @author Dmitry Berezovsky (corvis)
  */
 public interface Character<T extends Enum<T>> {
 
-    CharacterModel.Line getLine(String lineId, float formal, float emotional) throws LineNotFound;
+    CharacterModel.Line getLine(String lineId, Map<String, String> context, float formal, float emotional) throws LineNotFound;
 
     Character<T> setModel(CharacterModel model);
+
+    default CharacterModel.Line getLine(String lineId, float formal, float emotional) throws LineNotFound {
+        return getLine(lineId, Collections.emptyMap(), formal, emotional);
+    }
 
     default CharacterModel.Line getLine(String lineId) throws LineNotFound {
         return getLine(lineId, 0, 0);
     }
 
     default CharacterModel.Line getLine(T phrase) {
-        return getLine(phrase, 0, 0);
+        return getLine(phrase, Collections.emptyMap(), 0, 0);
+    }
+
+    default CharacterModel.Line getLine(T phrase, Map<String, String> context) {
+        return getLine(phrase, context, 0, 0);
     }
 
     default String getLineText(String lineId, float formal, float emotional) throws LineNotFound {
         return getLine(lineId, formal, emotional).getText();
     }
 
-    default CharacterModel.Line getLine(T phrase, float formal, float emotional) {
+    default CharacterModel.Line getLine(T phrase, Map<String, String> context, float formal, float emotional) {
         try {
-            return getLine(phrase.name(), formal, emotional);
+            return getLine(phrase.name(), context, formal, emotional);
         } catch (LineNotFound lineNotFound) {
             throw new RuntimeException("Line not found in the model while model was pre-validated.", lineNotFound);
         }
