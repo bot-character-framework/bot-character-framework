@@ -1,3 +1,7 @@
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
 dependencies {
     // jackson
     compile "com.fasterxml.jackson.core:jackson-databind"
@@ -7,4 +11,81 @@ dependencies {
     //
     compile "org.apache.commons:commons-collections4"
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+def pomConfig = {
+    licenses {
+//        license {
+//            name "MIT"
+//            distribution "repo"
+//            url "https://opensource.org/licenses/mit-license.php"
+//        }
+    }
+    developers {
+        developer {
+            id "corvis"
+            name "Dmitry Berezovsky"
+            email "corvis.mail@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/corvis/bot-character-framework"
+    }
+}
+// Create the pom configuration:
+
+// Create the publication with the pom configuration:
+publishing {
+    publications {
+        FrameworkCorePublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId project.group
+            artifactId rootProject.name.toLowerCase() + "-" + project.name
+            version project.version.toString()
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', rootProject.description)
+                root.appendNode('name', project.name)
+                root.appendNode('url', 'https://github.com/corvis/bot-character-framework')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+Properties properties = new Properties()
+properties.load(new FileInputStream(rootProject.file('local.properties')))
+
+bintray {
+    user = properties.getProperty('bintray.user')
+    key = properties.getProperty('bintray.apikey')
+    publications = ['FrameworkCorePublication']
+    override = true
+    pkg {
+        repo = 'maven'
+        name = 'bot-character-framework'
+        publish = true
+        version {
+            name = project.version.toString()
+        }
+    }
 }
