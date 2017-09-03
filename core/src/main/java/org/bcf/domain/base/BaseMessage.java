@@ -40,6 +40,7 @@ public class BaseMessage implements Message {
         return recipient;
     }
 
+    @Override
     public BaseMessage setRecipient(ConversationParticipant recipient) {
         this.recipient = recipient;
         return this;

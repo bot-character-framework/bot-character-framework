@@ -65,7 +65,7 @@ public class DefaultCharacterImpl<P extends Enum<P>> implements Character<P> {
             throw new LineNotFound(lineId);
         }
         List<CharacterModel.Line> variations = model.getModel().get(lineId).getVariations();
-        int index = random.nextInt(variations.size() - 1);
+        int index = random.nextInt(variations.size());
         CharacterModel.Line line = variations.get(index);
         return getPhraseFormatter().compilePhrase(line, context);
     }

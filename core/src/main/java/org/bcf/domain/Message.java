@@ -26,6 +26,7 @@ import java.time.LocalDate;
  */
 public interface Message extends Serializable {
     ConversationParticipant getRecipient();
+    Message setRecipient(ConversationParticipant recipient);
 
     Person getSender();
 

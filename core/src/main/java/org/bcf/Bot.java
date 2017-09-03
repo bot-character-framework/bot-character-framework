@@ -41,9 +41,9 @@ public interface Bot<P extends Enum<P>> {
 
     ConversationSessionStorage<P> getSessionStorage();
 
-    void onUnrecognizedIntent(StructuredMessage message);
+    void onUnrecognizedIntent(StructuredMessage message, ConversationSession<P> session);
 
-    void onProcessingError(StructuredMessage message, Exception e);
+    void onProcessingError(StructuredMessage message, ConversationSession<P> session, Exception e);
 
     void initialize();
 

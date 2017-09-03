@@ -61,6 +61,8 @@ public interface ConversationSession<P extends Enum<P>> extends Serializable {
 
     boolean persisted();
 
+    void reply(Message message);
+
     void reply(P phrase, Map<String, String> context);
 
     default void reply(P phrase) {

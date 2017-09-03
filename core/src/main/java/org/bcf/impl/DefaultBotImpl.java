@@ -46,7 +46,7 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
         // Step 1. Process incoming message with NLU module
         StructuredMessage structuredMessage = this.NLUModule.processMessage(message);
         if (structuredMessage.getIntent() == null) {
-            onUnrecognizedIntent(structuredMessage);
+            onUnrecognizedIntent(structuredMessage, session);
             return;
         }
         try {
@@ -75,6 +75,8 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
                     return;
                 }
             }
+        } catch(Exception e) {
+            onProcessingError(structuredMessage, session, e);
         } finally {
             getSessionStorage().unlock(session);
         }
@@ -116,12 +118,12 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
     }
 
     @Override
-    public void onUnrecognizedIntent(StructuredMessage message) {
+    public void onUnrecognizedIntent(StructuredMessage message, ConversationSession<P> session) {
 
     }
 
     @Override
-    public void onProcessingError(StructuredMessage message, Exception e) {
+    public void onProcessingError(StructuredMessage message, ConversationSession<P> session, Exception e) {
 
     }
 

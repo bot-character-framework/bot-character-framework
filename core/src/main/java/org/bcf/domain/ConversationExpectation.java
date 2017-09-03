@@ -46,7 +46,7 @@ public class ConversationExpectation implements Serializable {
 
     public ConversationExpectation(ConversationExpectation original) {
         name = original.getName();
-        targetName = original.getName();
+        targetName = original.getTargetName();
         expectedEntities.addAll(original.getExpectedEntities());
         expectedIntents.addAll(original.getExpectedIntents());
     }

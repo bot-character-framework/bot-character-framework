@@ -92,6 +92,14 @@ public class DefaultConversationSessionImpl<P extends Enum<P>> implements Conver
     }
 
     @Override
+    public void reply(Message message) {
+        if (message.getRecipient() == null) {
+            message.setRecipient(getResponseTarget());
+        }
+        bot.reply(message);
+    }
+
+    @Override
     public void reply(P phrase, Map<String, String> context) {
         TextMessage message = new TextMessage(bot.getCharacter().getLine(phrase, context).getText());
         message.setRecipient(getResponseTarget());
