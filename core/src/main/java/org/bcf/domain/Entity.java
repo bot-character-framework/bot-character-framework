@@ -29,6 +29,16 @@ public class Entity extends BasePredictedEntity implements Serializable {
     private int startPosition;
     private int endPosition;
 
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
+
+    private String additionalInfo;
+
     public String getValue() {
         return value;
     }
