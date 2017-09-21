@@ -1,3 +1,4 @@
+rootProject.name = "bot-character-framework"
 include 'example-bot'
 include 'core'
 
