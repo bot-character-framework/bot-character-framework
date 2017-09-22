@@ -54,6 +54,10 @@ public interface ConversationSession<P extends Enum<P>> extends Serializable {
 
     ConversationExpectation popExpectation();
 
+    ConversationExpectation peekExpectation();
+
+    boolean hasExpectations();
+
     @NotNull
     ConversationContext getContext();
 

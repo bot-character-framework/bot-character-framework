@@ -75,6 +75,19 @@ public class DefaultConversationSessionImpl<P extends Enum<P>> implements Conver
         return expectations.pop();
     }
 
+    @Override
+    public ConversationExpectation peekExpectation() {
+        if (expectations.isEmpty()) {
+            return null;
+        }
+        return expectations.peek();
+    }
+
+    @Override
+    public boolean hasExpectations() {
+        return !expectations.isEmpty();
+    }
+
     @NotNull
     @Override
     public ConversationContext getContext() {

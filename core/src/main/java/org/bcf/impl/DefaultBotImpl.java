@@ -51,6 +51,9 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
         }
         try {
             getSessionStorage().lock(session);
+            if (!shouldHandleMessage(structuredMessage, session)) {
+                return;
+            }
             // Step 2. Try to match expectations
             ConversationExpectation expectation = session.popExpectation();
             while (expectation != null) {
@@ -80,6 +83,17 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
         } finally {
             getSessionStorage().unlock(session);
         }
+    }
+
+    /**
+     * Method will be called before processing message. If return FALSE message will be ignored.
+     * It might be overridden to introduce some filtering behaviour.
+     * @param structuredMessage
+     * @param session
+     * @return
+     */
+    protected boolean shouldHandleMessage(StructuredMessage structuredMessage, ConversationSession<P> session){
+        return true;
     }
 
     @Override

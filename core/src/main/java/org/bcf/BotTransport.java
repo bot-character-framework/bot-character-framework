@@ -16,6 +16,7 @@
  */
 package org.bcf;
 
+import org.bcf.domain.ConversationParticipant;
 import org.bcf.domain.Message;
 
 /**
@@ -31,4 +32,6 @@ public interface BotTransport {
     void reply(Message message);
 
     boolean isInitialized();
+
+    ConversationParticipant getBotUser();
 }
