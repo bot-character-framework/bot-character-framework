@@ -172,6 +172,10 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
 
     protected Skill<? extends Bot<P>, P> findSkillMatchingExpectation(ConversationExpectation expectation,
                                                                       StructuredMessage structuredMessage) {
+        // Check if we have catch all expectation
+        if (expectation.isCatchAll()) {
+            return getNametoSkill().get(expectation.getTargetName());
+        }
         // Check if message matches intent
         if (structuredMessage.getIntent() != null && expectation.getExpectedIntents().contains(structuredMessage.getIntent().getId())) {
             return getNametoSkill().get(expectation.getTargetName());

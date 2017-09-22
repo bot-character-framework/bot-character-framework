@@ -30,6 +30,7 @@ public class ConversationExpectation implements Serializable {
     private String targetName;
     private List<String> expectedIntents = new ArrayList<>();
     private List<String> expectedEntities = new ArrayList<>();
+    private boolean catchAll;
     private StructuredMessage source;
 
     public ConversationExpectation(String targetName) {
@@ -49,6 +50,7 @@ public class ConversationExpectation implements Serializable {
         targetName = original.getTargetName();
         expectedEntities.addAll(original.getExpectedEntities());
         expectedIntents.addAll(original.getExpectedIntents());
+        setCatchAll(original.isCatchAll());
     }
 
     public ConversationExpectation addIntent(String intentId) {
@@ -110,6 +112,15 @@ public class ConversationExpectation implements Serializable {
 
     public ConversationExpectation setSource(StructuredMessage source) {
         this.source = source;
+        return this;
+    }
+
+    public boolean isCatchAll() {
+        return catchAll;
+    }
+
+    public ConversationExpectation setCatchAll(boolean catchAll) {
+        this.catchAll = catchAll;
         return this;
     }
 
