@@ -41,9 +41,10 @@ dependencies {
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
 
-
-    testCompile group: 'junit', name: 'junit'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    testCompile "junit:junit"
+    testCompile "org.hamcrest:hamcrest-all"
 }
 
 sourceSets {

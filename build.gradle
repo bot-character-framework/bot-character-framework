@@ -61,6 +61,7 @@ allprojects {
             // testing
             dependency "junit:junit:4.12"
             dependency "pl.pragmatists:JUnitParams:1.1.0"
+            dependency "org.hamcrest:hamcrest-all:1.3"
         }
     }
 

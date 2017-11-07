@@ -44,7 +44,7 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
         // Step 0. Create session for message
         ConversationSession<P> session = buildSessionForMessage(message);
         // Step 1. Process incoming message with NLU module
-        StructuredMessage structuredMessage = this.NLUModule.processMessage(message);
+        StructuredMessage structuredMessage = processIncomingMessage(message);
         if (structuredMessage.getIntent() == null) {
             onUnrecognizedIntent(structuredMessage, session);
             return;
@@ -94,6 +94,18 @@ public abstract class DefaultBotImpl<P extends Enum<P>> implements Bot<P> {
      */
     protected boolean shouldHandleMessage(StructuredMessage structuredMessage, ConversationSession<P> session){
         return true;
+    }
+
+    /**
+     * Method should process incoming chat message and transform it into structured method object.
+     * Default implementation just delegates this to NLU processing module, however in some cases it makes sence to
+     * handle service message e.g. user joined room etc.
+     *
+     * @param message new incoming message from transport
+     * @return Structured message object
+     */
+    protected StructuredMessage processIncomingMessage(Message message) {
+        return getNLUModule().processMessage(message);
     }
 
     @Override
