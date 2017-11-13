@@ -1,5 +1,5 @@
 # Bot Character Framework
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcorvis%2Fbot-character-framework.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcorvis%2Fbot-character-framework?ref=badge_shield) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/corvis/bot-character-framework/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcorvis%2Fbot-character-framework.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcorvis%2Fbot-character-framework?ref=badge_shield) [![Bintray](https://img.shields.io/bintray/v/corvis/maven/bot-character-framework.svg)](https://bintray.com/corvis/maven/bot-character-framework) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/corvis/bot-character-framework.svg)](https://github.com/corvis/bot-character-framework)
 
 Bot Character Framework(BCF) is a java framework for building smart chat bots. It provides a bunch of abstractions and allows developer to concentrate on implementation of the business logic. Thus it provides:
 
@@ -17,8 +17,6 @@ Here are a couple of scenarios when this framework might be a good choice:
 * You are interested in brining more humanity in your bot behavior.
 
 ## Documentation
-
-Brief description, ref to Wiki, Ref to example project
 
 To get started with Bot Character Framework please BCF's Documentation page. This describes key framework concepts, from what they are for, their structure and common use cases.
 
