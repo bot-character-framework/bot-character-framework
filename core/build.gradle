@@ -77,6 +77,10 @@ Properties properties = new Properties()
 def secretsFile = rootProject.file('local.properties')
 if (secretsFile.exists()) {
     properties.load(new FileInputStream(secretsFile))
+} else if (System.getenv('BINTRAY_USER') != null && System.getenv('BINTRAY_APIKEY') != null) {
+    properties.setProperty('bintray.user', System.getenv('BINTRAY_USER'))
+    properties.setProperty('bintray.apikey', System.getenv('BINTRAY_APIKEY'))
+    properties.setProperty('bintray.gpg.password', System.getenv('BINTRAY_GPG_PASSWORD'))
 }
 
 bintray {

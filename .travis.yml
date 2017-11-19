@@ -9,3 +9,8 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+deploy:
+  provider: script
+  script: ./gradlew :core:bintrayUpload
+  on:
+    branch: stable
