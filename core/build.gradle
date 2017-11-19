@@ -66,7 +66,7 @@ publishing {
                 def root = asNode()
                 root.appendNode('description', rootProject.description)
                 root.appendNode('name', project.name)
-                root.appendNode('url', 'https://github.com/corvis/bot-character-framework')
+                root.appendNode('url', 'https://github.com/bot-character-framework/bot-character-framework')
                 root.children().last() + pomConfig
             }
         }
@@ -74,7 +74,10 @@ publishing {
 }
 
 Properties properties = new Properties()
-properties.load(new FileInputStream(rootProject.file('local.properties')))
+def secretsFile = rootProject.file('local.properties')
+if (secretsFile.exists()) {
+    properties.load(new FileInputStream(secretsFile))
+}
 
 bintray {
     user = properties.getProperty('bintray.user')
