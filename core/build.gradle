@@ -80,7 +80,9 @@ if (secretsFile.exists()) {
 } else if (System.getenv('BINTRAY_USER') != null && System.getenv('BINTRAY_APIKEY') != null) {
     properties.setProperty('bintray.user', System.getenv('BINTRAY_USER'))
     properties.setProperty('bintray.apikey', System.getenv('BINTRAY_APIKEY'))
-    properties.setProperty('bintray.gpg.password', System.getenv('BINTRAY_GPG_PASSWORD'))
+    if (System.getenv('BINTRAY_GPG_PASSWORD') != null) {
+        properties.setProperty('bintray.gpg.password', System.getenv('BINTRAY_GPG_PASSWORD'))
+    }
 }
 
 bintray {
