@@ -23,10 +23,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import org.bcf.BotTransport;
 import org.bcf.MessageCallback;
-import org.bcf.domain.Message;
-import org.bcf.domain.Person;
-import org.bcf.domain.Room;
-import org.bcf.domain.TextMessage;
+import org.bcf.domain.*;
 
 import javax.websocket.DeploymentException;
 import java.io.IOException;
@@ -107,6 +104,11 @@ public class SlackTransport implements BotTransport {
     @Override
     public boolean isInitialized() {
         return initialized;
+    }
+
+    @Override
+    public ConversationParticipant getBotUser() {
+        return null; // todo : implement me
     }
 
     private Message buildMessageFromJson(JsonObject json) {
